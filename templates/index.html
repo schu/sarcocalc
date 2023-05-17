@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8">
+
+  <title>SarcoCalc</title>
+</head>
+<body>
+
+  <h1>SarcoCalc</h1>
+
+  <p><a href="https://pubmed.ncbi.nlm.nih.gov/27068860/">https://pubmed.ncbi.nlm.nih.gov/27068860/</a></p>
+
+  <p>Input your csv data in the format as shown below:</p>
+
+  <form method="post">
+    <textarea id="csv" name="csv" cols=80 rows=10></textarea>
+    <button type="submit" name="submit">Submit</button>
+  </form>
+
+  <p>Demo / test data to copy &amp; paste:</p>
+
+  <pre>
+    <code>
+id;age;size;grading;histo
+111;40;2;2;Leio
+112;53;1;1;Other
+    </code>
+  </pre>
+
+  {% if output %}
+    <h2>Result:</h2>
+    <textarea cols=80 rows=10 readonly>{{ output }}</textarea>
+  {% endif %}
+
+</body>
+</html>
