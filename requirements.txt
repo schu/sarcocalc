@@ -22,6 +22,8 @@ markupsafe==2.1.2
     # via
     #   jinja2
     #   werkzeug
+numpy==1.25.1
+    # via -r requirements.in
 packaging==23.1
     # via build
 pip-tools==6.13.0
