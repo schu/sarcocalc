@@ -54,27 +54,27 @@ GRADING_METASTASIS_POINTS = {
 }
 
 HISTOLOGY_SURVIVAL_POINTS = {
-    'leio': 28,
-    'dd/pleom lipo': 12,
-    'myxoid lipo': 0,
-    'mpnst': 19,
-    'myxofibro': 15,
-    'other': 21,
-    'synovial': 30,
-    'ups': 7,
-    'vascular': 53,
+    "leio": 28,
+    "dd/pleom lipo": 12,
+    "myxoid lipo": 0,
+    "mpnst": 19,
+    "myxofibro": 15,
+    "other": 21,
+    "synovial": 30,
+    "ups": 7,
+    "vascular": 53,
 }
 
 HISTOLOGY_METASTASIS_POINTS = {
-    'leio': 36,
-    'dd/pleom lipo': 7,
-    'myxoid lipo': 6,
-    'mpnst': 17,
-    'myxofibro': 0,
-    'other': 22,
-    'synovial': 27,
-    'ups': 14,
-    'vascular': 36,
+    "leio": 36,
+    "dd/pleom lipo": 7,
+    "myxoid lipo": 6,
+    "mpnst": 17,
+    "myxofibro": 0,
+    "other": 22,
+    "synovial": 27,
+    "ups": 14,
+    "vascular": 36,
 }
 
 POINTS_5Y_OS = {
@@ -131,6 +131,7 @@ POINTS_10Y_METASTASIS = {
     187: 0.95,
 }
 
+
 def calc(age, size, grading, histo):
     input_complete = True
     points = 0
@@ -138,7 +139,9 @@ def calc(age, size, grading, histo):
     age_survival_points = 0
     if age:
         age = max(int(age), 18)
-        age_survival_points = list({ k: v for k, v in AGE_POINTS.items() if k <= age }.values())[-1]
+        age_survival_points = list(
+            {k: v for k, v in AGE_POINTS.items() if k <= age}.values()
+        )[-1]
     else:
         input_complete = False
 
@@ -146,16 +149,34 @@ def calc(age, size, grading, histo):
     size_metastasis_points = 0
     if size:
         size = max(int(size), 1)
-        size_survival_points = list({ k: v for k, v in TUMOR_MAX_SIZE_CM_SURVIVAL_POINTS.items() if k <= size }.values())[-1]
-        size_metastasis_points = list({ k: v for k, v in TUMOR_MAX_SIZE_CM_METASTASIS_POINTS.items() if k <= size }.values())[-1]
+        size_survival_points = list(
+            {
+                k: v for k, v in TUMOR_MAX_SIZE_CM_SURVIVAL_POINTS.items() if k <= size
+            }.values()
+        )[-1]
+        size_metastasis_points = list(
+            {
+                k: v
+                for k, v in TUMOR_MAX_SIZE_CM_METASTASIS_POINTS.items()
+                if k <= size
+            }.values()
+        )[-1]
     else:
         input_complete = False
 
     grading_survival_points = 0
     grading_metastasis_points = 0
     if grading:
-        grading_survival_points = list({ k: v for k, v in GRADING_SURVIVAL_POINTS.items() if k <= int(grading) }.values())[-1]
-        grading_metastasis_points = list({ k: v for k, v in GRADING_METASTASIS_POINTS.items() if k <= int(grading) }.values())[-1]
+        grading_survival_points = list(
+            {
+                k: v for k, v in GRADING_SURVIVAL_POINTS.items() if k <= int(grading)
+            }.values()
+        )[-1]
+        grading_metastasis_points = list(
+            {
+                k: v for k, v in GRADING_METASTASIS_POINTS.items() if k <= int(grading)
+            }.values()
+        )[-1]
     else:
         input_complete = False
 
@@ -163,30 +184,56 @@ def calc(age, size, grading, histo):
         histo_survival_points = HISTOLOGY_SURVIVAL_POINTS.get(histo.lower())
         histo_metastasis_points = HISTOLOGY_METASTASIS_POINTS.get(histo.lower())
     else:
-        histo_survival_points = HISTOLOGY_SURVIVAL_POINTS['other']
-        histo_metastasis_points = HISTOLOGY_METASTASIS_POINTS['other']
+        histo_survival_points = HISTOLOGY_SURVIVAL_POINTS["other"]
+        histo_metastasis_points = HISTOLOGY_METASTASIS_POINTS["other"]
 
-    points_survival = age_survival_points + size_survival_points + grading_survival_points + histo_survival_points
-    points_metastasis = size_metastasis_points + grading_metastasis_points + histo_metastasis_points
+    points_survival = (
+        age_survival_points
+        + size_survival_points
+        + grading_survival_points
+        + histo_survival_points
+    )
+    points_metastasis = (
+        size_metastasis_points + grading_metastasis_points + histo_metastasis_points
+    )
 
     points_survival = min(max(points_survival, 25), 188)
     points_metastasis = min(max(points_metastasis, 11), 187)
 
-    five_year_os = round(interp(points_survival,
-                          list(POINTS_5Y_OS.keys()),
-                          list(POINTS_5Y_OS.values())), 2)
-    ten_year_os = round(interp(points_survival,
-                          list(POINTS_10Y_OS.keys()),
-                          list(POINTS_10Y_OS.values())), 2)
+    five_year_os = round(
+        interp(points_survival, list(POINTS_5Y_OS.keys()), list(POINTS_5Y_OS.values())),
+        2,
+    )
+    ten_year_os = round(
+        interp(
+            points_survival, list(POINTS_10Y_OS.keys()), list(POINTS_10Y_OS.values())
+        ),
+        2,
+    )
 
-    five_year_metastasis = round(interp(points_metastasis,
-                          list(POINTS_5Y_METASTASIS.keys()),
-                          list(POINTS_5Y_METASTASIS.values())), 2)
-    ten_year_metastasis = round(interp(points_metastasis,
-                          list(POINTS_10Y_METASTASIS.keys()),
-                          list(POINTS_10Y_METASTASIS.values())), 2)
+    five_year_metastasis = round(
+        interp(
+            points_metastasis,
+            list(POINTS_5Y_METASTASIS.keys()),
+            list(POINTS_5Y_METASTASIS.values()),
+        ),
+        2,
+    )
+    ten_year_metastasis = round(
+        interp(
+            points_metastasis,
+            list(POINTS_10Y_METASTASIS.keys()),
+            list(POINTS_10Y_METASTASIS.values()),
+        ),
+        2,
+    )
 
-
-    return (str(five_year_os), str(ten_year_os),
-            str(five_year_metastasis), str(ten_year_metastasis),
-            str(points_survival), str(points_metastasis), str(input_complete))
+    return (
+        str(five_year_os),
+        str(ten_year_os),
+        str(five_year_metastasis),
+        str(ten_year_metastasis),
+        str(points_survival),
+        str(points_metastasis),
+        str(input_complete),
+    )
