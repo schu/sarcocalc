@@ -8,7 +8,7 @@ from sarcoma_nomogram_survival import calc_5yos
 app = Flask(__name__)
 
 _csv_fieldnames = ('id', 'age', 'size', 'grading', 'histo')
-_csv_fieldnames_out = _csv_fieldnames + ('5yos',)
+_csv_fieldnames_out = _csv_fieldnames + ('5yos', '10yos', 'data_complete')
 
 @app.route("/", methods=['GET', 'POST'])
 def hello_world():
@@ -27,7 +27,7 @@ def hello_world():
             items.append(row)
 
         for i in items:
-            i['5yos'] = calc_5yos(i['age'], i['size'], i['grading'], i['histo'])
+            i['5yos'], i['10yos'], i['data_complete'] = calc_5yos(i['age'], i['size'], i['grading'], i['histo'])
 
         writer = csv.DictWriter(output, fieldnames=_csv_fieldnames_out, delimiter=';')
         writer.writeheader()

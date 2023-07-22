@@ -60,7 +60,23 @@ POINTS_5Y_OS = {
     37: 0.98,
 }
 
+POINTS_10Y_OS = {
+    188: 0.01,
+    167: 0.10,
+    156: 0.20,
+    148: 0.30,
+    139: 0.40,
+    131: 0.50,
+    111: 0.70,
+    97: 0.80,
+    74: 0.90,
+    53: 0.95,
+    37: 0.97,
+    25: 0.98,
+}
+
 def calc_5yos(age, size, grading, histo):
+    data_complete = True
     points = 0
 
     age = max(int(age), 18)
@@ -69,14 +85,22 @@ def calc_5yos(age, size, grading, histo):
     size = max(int(size), 1)
     size_points = list({ k: v for k, v in TUMOR_MAX_SIZE_CM_POINTS.items() if k <= size }.values())[-1]
 
-    grading_points = list({ k: v for k, v in GRADING_POINTS.items() if k <= int(grading) }.values())[-1]
+    grading_points = 0
+    if grading:
+        grading_points = list({ k: v for k, v in GRADING_POINTS.items() if k <= int(grading) }.values())[-1]
+    else:
+        data_complete = False
 
-    histo_points = HISTOLOGY_POINTS.get(histo.lower())
+    if histo.lower() in HISTOLOGY_POINTS.keys():
+        histo_points = HISTOLOGY_POINTS.get(histo.lower())
+    else:
+        histo_points = HISTOLOGY_POINTS['other']
 
     points = age_points + size_points + grading_points + histo_points
 
     points = min(max(points, 37), 180)
 
     five_year_os = list({ k: v for k, v in POINTS_5Y_OS.items() if k >= points }.values())[-1]
+    ten_year_os = list({ k: v for k, v in POINTS_10Y_OS.items() if k >= points }.values())[-1]
 
-    return str(five_year_os)
+    return (str(five_year_os), str(ten_year_os), str(data_complete))
