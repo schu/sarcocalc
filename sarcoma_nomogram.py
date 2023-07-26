@@ -139,9 +139,10 @@ def calc(age, size, grading, histo):
     age_survival_points = 0
     if age:
         age = max(int(age), 18)
-        age_survival_points = list(
-            {k: v for k, v in AGE_POINTS.items() if k <= age}.values()
-        )[-1]
+        age_survival_points = round(
+            interp(age, list(AGE_POINTS.keys()), list(AGE_POINTS.values())),
+            2,
+        )
     else:
         input_complete = False
 
@@ -149,42 +150,55 @@ def calc(age, size, grading, histo):
     size_metastasis_points = 0
     if size:
         size = max(int(size), 1)
-        size_survival_points = list(
-            {
-                k: v for k, v in TUMOR_MAX_SIZE_CM_SURVIVAL_POINTS.items() if k <= size
-            }.values()
-        )[-1]
-        size_metastasis_points = list(
-            {
-                k: v
-                for k, v in TUMOR_MAX_SIZE_CM_METASTASIS_POINTS.items()
-                if k <= size
-            }.values()
-        )[-1]
+        size_survival_points = round(
+            interp(
+                size,
+                list(TUMOR_MAX_SIZE_CM_SURVIVAL_POINTS.keys()),
+                list(TUMOR_MAX_SIZE_CM_SURVIVAL_POINTS.values()),
+            ),
+            2,
+        )
+        size_metastasis_points = round(
+            interp(
+                size,
+                list(TUMOR_MAX_SIZE_CM_METASTASIS_POINTS.keys()),
+                list(TUMOR_MAX_SIZE_CM_METASTASIS_POINTS.values()),
+            ),
+            2,
+        )
     else:
         input_complete = False
 
     grading_survival_points = 0
     grading_metastasis_points = 0
     if grading:
-        grading_survival_points = list(
-            {
-                k: v for k, v in GRADING_SURVIVAL_POINTS.items() if k <= int(grading)
-            }.values()
-        )[-1]
-        grading_metastasis_points = list(
-            {
-                k: v for k, v in GRADING_METASTASIS_POINTS.items() if k <= int(grading)
-            }.values()
-        )[-1]
+        grading_survival_points = round(
+            interp(
+                grading,
+                list(GRADING_SURVIVAL_POINTS.keys()),
+                list(GRADING_SURVIVAL_POINTS.values()),
+            ),
+            2,
+        )
+        grading_metastasis_points = round(
+            interp(
+                grading,
+                list(GRADING_METASTASIS_POINTS.keys()),
+                list(GRADING_METASTASIS_POINTS.values()),
+            ),
+            2,
+        )
     else:
         input_complete = False
 
     if histo.lower() in HISTOLOGY_SURVIVAL_POINTS.keys():
         histo_survival_points = HISTOLOGY_SURVIVAL_POINTS.get(histo.lower())
-        histo_metastasis_points = HISTOLOGY_METASTASIS_POINTS.get(histo.lower())
     else:
         histo_survival_points = HISTOLOGY_SURVIVAL_POINTS["other"]
+
+    if histo.lower() in HISTOLOGY_METASTASIS_POINTS.keys():
+        histo_metastasis_points = HISTOLOGY_METASTASIS_POINTS.get(histo.lower())
+    else:
         histo_metastasis_points = HISTOLOGY_METASTASIS_POINTS["other"]
 
     points_survival = (
@@ -226,6 +240,21 @@ def calc(age, size, grading, histo):
             list(POINTS_10Y_METASTASIS.values()),
         ),
         2,
+    )
+
+    print(
+        f"""
+age: {age} size: {size} grading: {grading} histo: '{histo}'
+age_survival_points: {age_survival_points}
+size_survival_points: {size_survival_points}
+size_metastasis_points: {size_metastasis_points}
+grading_survival_points: {grading_survival_points}
+grading_metastasis_points: {grading_metastasis_points}
+histo_survival_points: {histo_survival_points}
+histo_metastasis_points: {histo_metastasis_points}
+points_survival: {points_survival}
+ponts_metastasis: {points_metastasis}
+"""
     )
 
     return (
